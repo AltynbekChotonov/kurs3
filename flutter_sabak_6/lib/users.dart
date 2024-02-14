@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sabak_5/user_data.dart';
+import 'package:flutter_sabak_6/user_data.dart';
+import 'package:flutter_sabak_6/user_detail_page.dart';
 
 class UsersPage extends StatefulWidget {
   const UsersPage({super.key});
@@ -14,8 +15,9 @@ class _UsersPageState extends State<UsersPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
+        centerTitle: true,
         title: const Text(
-          'data',
+          'UsersPage',
           style: TextStyle(color: Colors.white),
         ),
       ),
@@ -26,6 +28,14 @@ class _UsersPageState extends State<UsersPage> {
             final user = users[index];
 
             return ListTile(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => UserDetailPage(
+                              user: users[index],
+                            )));
+              },
               title: Text(user.aty),
               subtitle: Text('${user.kesibi} ${user.jash}jashta'),
               leading: CircleAvatar(
