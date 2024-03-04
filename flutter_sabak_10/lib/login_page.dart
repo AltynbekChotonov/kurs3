@@ -1,8 +1,34 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_sabak_10/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  bool isActive = false;
+  String? _phone;
+  String? _email;
+
+  void _activate() {
+    if (_phone != null && _email != null) {
+      if (_phone!.isEmpty || _email!.isEmpty) {
+        isActive = false;
+      } else {
+        isActive = true;
+      }
+    }
+    // log(_phone.toString());
+    // log(_email.toString());
+    // log(isActive.toString());
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,14 +94,20 @@ class LoginPage extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: TextFormField(
-                    initialValue: '+996778578790',
+                    // initialValue: '+996778578790',
                     style: const TextStyle(
                       color: Color.fromARGB(255, 2, 131, 120),
                       fontSize: 20,
                     ),
+                    onChanged: (String? phone) {
+                      _phone = phone;
+
+                      _activate();
+                    },
                     decoration: const InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
+                      hintText: 'phone number',
                       isDense: true,
                       contentPadding: EdgeInsets.all(8),
                       prefixIcon: Icon(
@@ -93,14 +125,20 @@ class LoginPage extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: TextFormField(
-                    initialValue: 'altynbek@gmail.com',
+                    // initialValue: 'altynbek@gmail.com',
                     style: const TextStyle(
                       color: Color.fromARGB(255, 2, 131, 120),
                       fontSize: 20,
                     ),
+                    onChanged: (String? email) {
+                      _email = email;
+                      _activate();
+                      // print(_email);
+                    },
                     decoration: const InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
+                      hintText: 'email address',
                       isDense: true,
                       contentPadding: EdgeInsets.all(8),
                       prefixIcon: Icon(
@@ -113,8 +151,8 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                   side: const BorderSide(
@@ -123,11 +161,19 @@ class LoginPage extends StatelessWidget {
                     style: BorderStyle.solid,
                   ),
                 ),
-                onPressed: () {},
+                onPressed: isActive
+                    ? () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const HomePage()),
+                        );
+                      }
+                    : null,
                 child: const Text(
                   'Sing In',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 20,
                   ),
                 ),
