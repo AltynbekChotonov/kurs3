@@ -1,8 +1,13 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_sabak_10/home_page.dart';
+import 'package:login_page/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'model.dart';
+
+final students = <Student>[nursultan, gylzada, nazik, mursali, emir];
+const snackBar = SnackBar(
+  content: Text('kechiresiz login je phone kata'),
+);
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -24,10 +29,21 @@ class _LoginPageState extends State<LoginPage> {
         isActive = true;
       }
     }
-    // log(_phone.toString());
-    // log(_email.toString());
-    // log(isActive.toString());
     setState(() {});
+  }
+
+  void controlEmailPhone(String phone, String email) {
+    for (final student in students) {
+      if (phone == student.phone && email == student.email) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+        break;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }
   }
 
   @override
@@ -162,11 +178,9 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 onPressed: isActive
                     ? () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const HomePage()),
-                        );
+                        if (_phone != null && _email != null) {
+                          controlEmailPhone(_phone!, _email!);
+                        }
                       }
                     : null,
                 child: const Text(
