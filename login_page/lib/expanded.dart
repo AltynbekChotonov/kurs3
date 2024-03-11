@@ -26,7 +26,7 @@ class ExpandedPage extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-              color: Color.fromARGB(255, 212, 0, 162),
+              color: const Color.fromARGB(255, 212, 0, 162),
             ),
           ),
         ],

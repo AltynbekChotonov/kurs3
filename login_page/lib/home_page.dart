@@ -26,10 +26,7 @@ class HomePage extends StatelessWidget {
           Text(
             'I’m Rich',
             style: GoogleFonts.sofia(
-                color: Color.fromARGB(255, 0, 0, 0),
-                //fontWeight: FontWeight.w400,
-                fontSize: 48,
-                height: 2.3),
+                color: Color.fromARGB(255, 0, 0, 0), fontSize: 48, height: 2.3),
           ),
           Text(
             'I’m Rich',
@@ -39,7 +36,6 @@ class HomePage extends StatelessWidget {
                 fontSize: 48),
           ),
           Image.asset('assets/images/diamond_kurs_1.png'),
-          // Expanded(child: Image.asset('assets/images/diamond.jpg')),
         ]),
       ),
     );
