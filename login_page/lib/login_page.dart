@@ -37,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
       if (phone == student.phone && email == student.email) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(builder: (context) => HomePage(student)),
         );
         break;
       } else {

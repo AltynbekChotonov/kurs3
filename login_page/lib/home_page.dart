@@ -1,9 +1,16 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:login_page/model.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  const HomePage(
+    this.student, {
+    Key? key,
+  }) : super(key: key);
+
+  final Student student;
 
   @override
   Widget build(BuildContext context) {
@@ -15,9 +22,9 @@ class HomePage extends StatelessWidget {
         shadowColor: Colors.black,
         centerTitle: true,
         backgroundColor: Color(0XFFFEC107),
-        title: const Text(
-          'ТАПШЫРМА-03',
-          style: TextStyle(
+        title: Text(
+          student.name,
+          style: const TextStyle(
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
