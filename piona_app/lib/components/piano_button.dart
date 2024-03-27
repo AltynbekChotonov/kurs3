@@ -1,10 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 
 class PianoWhiteButton extends StatelessWidget {
-  const PianoWhiteButton({Key? key}) : super(key: key);
+  const PianoWhiteButton(this.nota, {Key? key}) : super(key: key);
 
-  //final Color color;
+  final String nota;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,15 @@ class PianoWhiteButton extends StatelessWidget {
               },
             ),
           ),
-          onPressed: () {},
+          onPressed: () async {
+            await AssetsAudioPlayer.newPlayer()
+                .open(Audio("/audios/$nota.wav"));
+          },
+          onLongPress: () async {
+            await AssetsAudioPlayer.newPlayer().open(
+              Audio("/audios/$nota.wav"),
+            );
+          },
           child: Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
