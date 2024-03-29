@@ -1,13 +1,21 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:piona_app/app/app.dart';
+
+import 'app/app.dart';
 
 void main() {
-  print('restart');
+  log('restart');
+  // widgettteribiz orduna kelgenden kitin
   WidgetsFlutterBinding.ensureInitialized();
+
+  // telefondum oriantashion bergenbiz
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.portraitDown,
   ]);
+
+  // run app
   runApp(const MyApp());
 }
