@@ -25,7 +25,10 @@ class _HomePageState extends State<HomePage> {
           const Expanded(
             flex: 1,
             child: Center(
-              child: Text('do re mi fa...'),
+              child: Text(
+                'Менин PIANO APP тиркемем сизге кызык болгон болсо келиңиз үйрөнүңүз\n 4- группага катоо жүрүп жатат, шашылыңыздар орундар чектелүү.',
+                style: TextStyle(fontSize: 20),
+              ),
             ),
           ),
           Expanded(
