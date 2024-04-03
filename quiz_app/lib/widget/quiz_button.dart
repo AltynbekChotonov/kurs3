@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 class QuizButton extends StatelessWidget {
-  const QuizButton(this.isTrue, {Key? key}) : super(key: key);
+  const QuizButton(
+      {required this.tuuraBattonbu, Key? key, required this.backanda})
+      : super(key: key);
 
-  final bool isTrue;
+  final bool tuuraBattonbu;
+  final void Function(bool) backanda;
 
   @override
   Widget build(BuildContext context) {
@@ -12,17 +15,14 @@ class QuizButton extends StatelessWidget {
       height: 40,
       child: ElevatedButton(
           child: Text(
-            isTrue ? 'Туура' : 'Туура эмес',
+            tuuraBattonbu ? 'Туура' : 'Туура эмес',
             style: TextStyle(color: Colors.white, fontSize: 25),
           ),
-          onPressed: () {},
+          onPressed: () => backanda(!tuuraBattonbu),
           style: ElevatedButton.styleFrom(
-            backgroundColor: isTrue ? Color(0xff4CAF52) : Color(0xffF54335),
-          )
-          // style: ElevatedButton.styleFrom(
-          //   primary: Color(0xff4CAF52),
-
-          ),
+            backgroundColor:
+                tuuraBattonbu ? Color(0xff4CAF52) : Color(0xffF54335),
+          )),
     );
   }
 }
