@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:game_test_app/components/continent_card.dart';
 import 'package:game_test_app/constants/app_color.dart';
 import 'package:game_test_app/constants/app_text.dart';
-
-List continents = <String>[
-  'Africa',
-  'Asia',
-  'Australia',
-  'Europe',
-  'Nouth America',
-  'South America'
-];
+import 'package:game_test_app/model/continents.dart';
+import 'package:game_test_app/pages/test_page.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({
@@ -56,21 +50,24 @@ class MyHomePage extends StatelessWidget {
           ),
           Expanded(
             child: GridView.builder(
+                padding: EdgeInsets.all(10),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                 ),
-                itemCount: 6,
+                itemCount: continents.length,
                 itemBuilder: (context, index) {
-                  return Card(
-                      child: Column(
-                    children: [
-                      Text(index.toString()),
-                      Expanded(
-                        child: SvgPicture.asset(
-                            'assets/icons/continents/${continents[index]}.svg'),
-                      )
-                    ],
-                  ));
+                  // final item = continents[index];
+                  return ContinentCard(
+                    cont: continents[index],
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (BuildContext context) => const TestPage(),
+                        ),
+                      );
+                    },
+                  );
                 }),
           ),
         ],
