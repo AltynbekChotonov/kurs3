@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:game_test_app/components/test_page_app_bar_title.dart';
+import 'package:game_test_app/components/test_slider.dart';
+import 'package:game_test_app/components/variants.dart';
 import 'package:game_test_app/constants/app_color.dart';
 
 class TestPage extends StatefulWidget {
@@ -17,27 +20,27 @@ class _TestPageState extends State<TestPage> {
         foregroundColor: AppColors.black,
         backgroundColor: AppColors.bgColor,
         centerTitle: true,
-        title: Row(
-          children: [
-            Card(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                child: Row(
-                  children: [
-                    Icon(Icons.tips_and_updates),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      child: const Text('32'),
-                    ),
-                    Icon(Icons.add_circle),
-                  ],
-                ),
-              ),
-            )
-          ],
-        ),
+        title: const TestPageAppBarTitle(),
         elevation: 0,
+      ),
+      body: Column(
+        children: [
+          const TestSlider(),
+          Center(
+            child: Text(
+              'Pekin',
+              style: TextStyle(fontSize: 33, height: 1.5),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Image.asset('assets/images/capitals/bishkek.jpeg'),
+            ),
+          ),
+          const Variants(),
+        ],
       ),
     );
   }
