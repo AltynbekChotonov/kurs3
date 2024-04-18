@@ -60,12 +60,19 @@ class MyHomePage extends StatelessWidget {
                   return ContinentCard(
                     cont: continents[index],
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder: (BuildContext context) => const TestPage(),
-                        ),
-                      );
+                      if (continents[index].suroo != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (BuildContext context) =>
+                                TestPage(suroo: continents[index].suroo!),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Бул континенттин суроосу жок')));
+                      }
                     },
                   );
                 }),

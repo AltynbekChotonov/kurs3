@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:game_test_app/constants/app_text.dart';
+import 'package:game_test_app/model/suroo.dart';
 
 class Continent {
   const Continent({
     required this.name,
     required this.icon,
     required this.color,
+    this.suroo,
   });
 
   final String name;
   final String icon;
   final Color color;
+  final List<Suroo>? suroo;
 }
 
-const asia = Continent(
+final asia = Continent(
   name: AppText.asia,
   icon: 'asia',
   color: Color(0xffFE8D7D),
+  suroo: asiaQuessions,
 );
+
 const europe = Continent(
   name: AppText.europe,
   icon: 'europe',
