@@ -5,6 +5,7 @@ import 'package:game_test_app/components/test_slider.dart';
 import 'package:game_test_app/components/variants.dart';
 import 'package:game_test_app/constants/app_color.dart';
 import 'package:game_test_app/model/suroo.dart';
+import 'package:game_test_app/model/suroo.dart';
 
 class TestPage extends StatefulWidget {
   const TestPage({super.key, required this.suroo});
@@ -17,6 +18,8 @@ class TestPage extends StatefulWidget {
 
 class _TestPageState extends State<TestPage> {
   int index = 0;
+  int tuuraJooptor = 0;
+  int kataJooptor = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,10 @@ class _TestPageState extends State<TestPage> {
         foregroundColor: AppColors.black,
         backgroundColor: AppColors.bgColor,
         centerTitle: true,
-        title: const TestPageAppBarTitle(),
+        title: TestPageAppBarTitle(
+          kataJooptor: kataJooptor,
+          tuuraJooptor: tuuraJooptor,
+        ),
         elevation: 0,
       ),
       body: Column(
@@ -34,7 +40,7 @@ class _TestPageState extends State<TestPage> {
           const TestSlider(),
           Center(
             child: Text(
-              '${widget.suroo[index].text}',
+              widget.suroo[index].text,
               style: TextStyle(fontSize: 33, height: 1.5),
             ),
           ),
@@ -47,8 +53,37 @@ class _TestPageState extends State<TestPage> {
             ),
           ),
           Variants(
-            jooptor: widget.suroo[index].jooptor,
-          ),
+              jooptor: widget.suroo[index].jooptor,
+              onTap: (istrue) async {
+                if (index + 1 == widget.suroo.length) {
+                  await showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text('Cиздин тестиңиздин жыйынтыгы!'),
+                      content: Text('туура:$tuuraJooptor  ката:$kataJooptor'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('aртка'),
+                          onPressed: () {
+                            index = 0;
+                            kataJooptor = 0;
+                            tuuraJooptor = 0;
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                if (istrue == true) {
+                  tuuraJooptor++;
+                } else {
+                  kataJooptor++;
+                }
+                setState(() {
+                  index++;
+                });
+              }),
         ],
       ),
     );

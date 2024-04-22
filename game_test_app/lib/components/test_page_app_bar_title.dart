@@ -4,7 +4,11 @@ import 'package:game_test_app/constants/app_color.dart';
 class TestPageAppBarTitle extends StatelessWidget {
   const TestPageAppBarTitle({
     super.key,
+    required this.tuuraJooptor,
+    required this.kataJooptor,
   });
+  final tuuraJooptor;
+  final kataJooptor;
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +22,9 @@ class TestPageAppBarTitle extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
             child: Row(
               children: [
-                Icon(
-                  Icons.tips_and_updates,
-                  color: AppColors.yellow,
+                Text(
+                  '$kataJooptor',
+                  style: TextStyle(color: AppColors.red, fontSize: 15),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -37,7 +41,10 @@ class TestPageAppBarTitle extends StatelessWidget {
             ),
           ),
         ),
-        Text('3'),
+        Text(
+          '$tuuraJooptor',
+          style: TextStyle(color: AppColors.green, fontSize: 15),
+        ),
         Row(
           children: [
             SizedBox(

@@ -5,9 +5,14 @@ import 'package:game_test_app/constants/app_color.dart';
 import 'package:game_test_app/model/suroo.dart';
 
 class Variants extends StatelessWidget {
-  const Variants({Key? key, required this.jooptor}) : super(key: key);
+  const Variants({
+    Key? key,
+    required this.jooptor,
+    required this.onTap,
+  }) : super(key: key);
 
   final List<Joop> jooptor;
+  final Function(bool) onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +27,9 @@ class Variants extends StatelessWidget {
               return Card(
                 color: AppColors.inActive,
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    onTap(jooptor[index].istrue);
+                  },
                   child: Center(
                     child: Text(jooptor[index].text),
                   ),

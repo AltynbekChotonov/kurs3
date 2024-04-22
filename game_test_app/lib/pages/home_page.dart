@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/svg.dart';
+
 import 'package:game_test_app/components/continent_card.dart';
 import 'package:game_test_app/constants/app_color.dart';
 import 'package:game_test_app/constants/app_text.dart';

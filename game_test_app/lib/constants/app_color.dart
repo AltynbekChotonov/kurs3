@@ -8,5 +8,5 @@ class AppColors {
   static const Color black = Color(0xff000000);
   static const Color yellow = Color(0xffEB9AA8);
   static const Color green = Color(0xff3D8847);
-  static const Color inActive = Color(0xff7D7B7C);
+  static const Color inActive = Color.fromARGB(255, 161, 159, 160);
 }
