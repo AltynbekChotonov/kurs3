@@ -1,13 +1,19 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 class Weather {
   final int id;
   final String main;
   final String description;
   final String icon;
+  final String city;
+  final String country;
+  final String temp;
+
   Weather({
     required this.id,
     required this.main,
     required this.description,
     required this.icon,
+    required this.city,
+    required this.country,
+    required this.temp,
   });
 }
