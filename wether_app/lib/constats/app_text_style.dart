@@ -8,4 +8,7 @@ class AppTextStyle {
     color: AppColors.white,
     fontSize: 96,
   );
+
+  static TextStyle body2(double size) => TextStyle(
+      color: AppColors.white, fontSize: 50, fontWeight: FontWeight.w300);
 }

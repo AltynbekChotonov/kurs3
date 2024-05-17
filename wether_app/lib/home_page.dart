@@ -2,7 +2,9 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:wether_app/components/custom_icon_button.dart';
 
 import 'package:wether_app/constats/api_const.dart';
@@ -19,18 +21,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future<Weather?> fetchData() async {
+  Future<Weather?>? fetchData() async {
+    await Future.delayed(const Duration(seconds: 3));
     final dio = Dio();
-    final res = await dio.get(ApiConst.address);
-    if (res.statusCode == 200) {
+    final response = await dio.get(ApiConst.address);
+    if (response.statusCode == 200) {
       final Weather weather = Weather(
-        id: res.data['weather'][0]['id'],
-        main: res.data['weather'][0]['main'],
-        description: res.data['weather'][0]['description'],
-        icon: res.data['weather'][0]['icon'],
-        city: res.data['name'],
-        temp: res.data["main"]['temp'],
-        country: res.data['sys']['country'],
+        id: response.data['weather'][0]['id'],
+        main: response.data['weather'][0]['main'],
+        description: response.data['weather'][0]['description'],
+        icon: response.data['weather'][0]['icon'],
+        city: response.data['name'],
+        temp: response.data["main"]['temp'],
+        country: response.data['sys']['country'],
       );
       //print(weather);
       return weather;
@@ -56,35 +59,70 @@ class _HomePageState extends State<HomePage> {
           style: AppTextStyle.appBar,
         ),
       ),
-      body: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/weather.jpg'),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  CustomIconButton(icon: Icons.near_me),
-                  CustomIconButton(icon: Icons.location_city),
-                ],
-              ),
-              Row(
-                children: [
-                  Text('8', style: AppTextStyle.body1),
-                  Image.network(
-                    ApiConst.getIcon('03n', 4),
-                    height: 150,
-                    fit: BoxFit.fitHeight,
+      body: FutureBuilder<Weather?>(
+          future: fetchData(),
+          builder: (context, joop) {
+            if (joop.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (joop.connectionState == ConnectionState.none) {
+              return Text('Интернет байланышында ката бар');
+            } else if (joop.connectionState == ConnectionState.done) {
+              if (joop.hasError) {
+                return Text('${joop.error}');
+              }
+            }
+            return Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/weather.jpg'),
+                    fit: BoxFit.cover,
                   ),
-                ],
-              )
-            ],
-          )),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        CustomIconButton(icon: Icons.near_me),
+                        CustomIconButton(icon: Icons.location_city),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text('8', style: AppTextStyle.body1),
+                        Image.network(
+                          ApiConst.getIcon('03n', 4),
+                          height: 150,
+                          fit: BoxFit.fitHeight,
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "You'|| need and".replaceAll(' ', '\n'),
+                              textAlign: TextAlign.right,
+                              style: AppTextStyle.body2(40),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text("Bishkek", style: AppTextStyle.body1),
+                        const SizedBox(width: 10)
+                      ],
+                    ),
+                  ],
+                ));
+          }),
       // body: Center(
       //   child: FutureBuilder(
       //     future: fetchData(),
