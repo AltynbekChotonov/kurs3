@@ -2,8 +2,11 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:geolocator/geolocator.dart';
 
 import 'package:wether_app/components/custom_icon_button.dart';
 
@@ -21,10 +24,26 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future<Weather?>? fetchData() async {
+  Future<void> weatherLocation() async {
+    log('-------------');
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.always &&
+          permission == LocationPermission.whileInUse) {
+        await fetchData();
+      }
+    } else {
+      Position position = await Geolocator.getCurrentPosition();
+      await fetchData(
+          ApiConst.latLongaddres(position.latitude, position.longitude));
+    }
+  }
+
+  Future<Weather?>? fetchData([String? url]) async {
     // await Future.delayed(const Duration(seconds: 3));
     final dio = Dio();
-    final response = await dio.get(ApiConst.address);
+    final response = await dio.get(url ?? ApiConst.address);
     if (response.statusCode == 200) {
       final Weather weather = Weather(
         id: response.data['weather'][0]['id'],
@@ -63,14 +82,14 @@ class _HomePageState extends State<HomePage> {
         future: fetchData(),
         builder: (context, joop) {
           if (joop.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (joop.connectionState == ConnectionState.none) {
-            return Text('Интернет байланышында ката бар');
+            return const Text('Интернет байланышында ката бар');
           } else if (joop.connectionState == ConnectionState.done) {
             if (joop.hasError) {
               return Text('${joop.error}');
             } else if (joop.hasData) {
-              final Weather = joop.data!;
+              final weather = joop.data!;
               return Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -83,30 +102,38 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        CustomIconButton(icon: Icons.near_me),
-                        CustomIconButton(icon: Icons.location_city),
+                      children: [
+                        CustomIconButton(
+                          icon: Icons.near_me,
+                          onPressed: () async {
+                            await weatherLocation();
+                          },
+                        ),
+                        CustomIconButton(
+                          icon: Icons.location_city,
+                          onPressed: () {},
+                        ),
                       ],
                     ),
                     Row(
                       children: [
                         const SizedBox(width: 20),
-                        Text('${(Weather.temp - 273.15).floorToDouble()}',
-                            style: AppTextStyle.body1),
+                        Text('${weather.temp}', style: AppTextStyle.body1),
                         Image.network(
-                          ApiConst.getIcon(Weather.icon, 4),
+                          ApiConst.getIcon(weather.icon, 4),
                           height: 150,
                           fit: BoxFit.fitHeight,
                         ),
                       ],
                     ),
                     Expanded(
+                      flex: 5,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Expanded(
                             child: Text(
-                              "${Weather.description}".replaceAll(' ', '\n'),
+                              "${weather.description}".replaceAll(' ', '\n'),
                               textAlign: TextAlign.right,
                               style: AppTextStyle.body2(40),
                             ),
@@ -115,14 +142,19 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(Weather.city,
-                            textAlign: TextAlign.right,
-                            style: AppTextStyle.body1),
-                        const SizedBox(width: 10)
-                      ],
+                    Expanded(
+                      flex: 1,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          FittedBox(
+                            child: Text(weather.city,
+                                textAlign: TextAlign.right,
+                                style: AppTextStyle.body1),
+                          ),
+                          const SizedBox(width: 10)
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -131,7 +163,7 @@ class _HomePageState extends State<HomePage> {
               return const Text('Белгисиз ката болду сураныч кайра кириниз...');
             }
           } else {
-            const Text('Белгисиз ката болду сураныч кайра кириниз...');
+            return const Text('Белгисиз ката болду сураныч кайра кириниз...');
           }
         },
       ),
