@@ -2,10 +2,9 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:geolocator/geolocator.dart';
 
 import 'package:wether_app/components/custom_icon_button.dart';
@@ -24,23 +23,52 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Weather? weather;
+
   Future<void> weatherLocation() async {
-    log('-------------');
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.always &&
           permission == LocationPermission.whileInUse) {
-        await fetchData();
+        Position position = await Geolocator.getCurrentPosition();
+        final dio = Dio();
+        final response = await dio
+            .get(ApiConst.latLongaddres(position.latitude, position.longitude));
+        if (response.statusCode == 200) {
+          weather = Weather(
+            id: response.data['current']['weather'][0]['id'],
+            main: response.data['current']['weather'][0]['main'],
+            description: response.data['current']['weather'][0]['description'],
+            icon: response.data['current']['weather'][0]['icon'],
+            city: response.data['timezone'],
+            temp: response.data['current']['temp'],
+          );
+        }
+        setState(() {});
       }
     } else {
       Position position = await Geolocator.getCurrentPosition();
-      await fetchData(
-          ApiConst.latLongaddres(position.latitude, position.longitude));
+      final dio = Dio();
+      final response = await dio
+          .get(ApiConst.latLongaddres(position.latitude, position.longitude));
+      if (response.statusCode == 200) {
+        weather = Weather(
+          id: response.data['current']['weather'][0]['id'],
+          main: response.data['current']['weather'][0]['main'],
+          description: response.data['current']['weather'][0]['description'],
+          icon: response.data['current']['weather'][0]['icon'],
+          city: response.data['timezone'],
+          temp: response.data['current']['temp'],
+        );
+      }
+      print(weather);
+      setState(() {});
+      // await fetchData(ApiConst.latLongaddres(position.latitude, position.longitude));
     }
   }
 
-  Future<Weather?>? fetchData([String? url]) async {
+  Future<void> fetchData([String? url]) async {
     // await Future.delayed(const Duration(seconds: 3));
     final dio = Dio();
     final response = await dio.get(url ?? ApiConst.address);
@@ -54,8 +82,8 @@ class _HomePageState extends State<HomePage> {
         temp: response.data["main"]['temp'],
         country: response.data['sys']['country'],
       );
-      //print(weather);
-      return weather;
+      print(weather);
+      setState(() {});
     }
   }
 
@@ -70,29 +98,19 @@ class _HomePageState extends State<HomePage> {
     log('max w = ${MediaQuery.of(context).size.width}');
     log('max h = ${MediaQuery.of(context).size.height}');
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        centerTitle: true,
-        title: Text(
-          AppText.appBarTitle,
-          style: AppTextStyle.appBar,
+        appBar: AppBar(
+          backgroundColor: AppColors.white,
+          centerTitle: true,
+          title: const Text(
+            AppText.appBarTitle,
+            style: AppTextStyle.appBar,
+          ),
         ),
-      ),
-      body: FutureBuilder<Weather?>(
-        future: fetchData(),
-        builder: (context, joop) {
-          if (joop.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (joop.connectionState == ConnectionState.none) {
-            return const Text('Интернет байланышында ката бар');
-          } else if (joop.connectionState == ConnectionState.done) {
-            if (joop.hasError) {
-              return Text('${joop.error}');
-            } else if (joop.hasData) {
-              final weather = joop.data!;
-              return Container(
+        body: weather == null
+            ? const Center(child: CircularProgressIndicator())
+            : Container(
                 width: double.infinity,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('assets/weather.jpg'),
                     fit: BoxFit.cover,
@@ -118,10 +136,11 @@ class _HomePageState extends State<HomePage> {
                     Row(
                       children: [
                         const SizedBox(width: 20),
-                        Text('${weather.temp}', style: AppTextStyle.body1),
+                        Text('${(weather!.temp - 273.15).floorToDouble()}',
+                            style: AppTextStyle.body1),
                         Image.network(
-                          ApiConst.getIcon(weather.icon, 4),
-                          height: 150,
+                          ApiConst.getIcon(weather!.icon, 4),
+                          height: 160,
                           fit: BoxFit.fitHeight,
                         ),
                       ],
@@ -133,9 +152,9 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           Expanded(
                             child: Text(
-                              "${weather.description}".replaceAll(' ', '\n'),
+                              "${weather!.description}".replaceAll(' ', '\n'),
                               textAlign: TextAlign.right,
-                              style: AppTextStyle.body2(40),
+                              style: AppTextStyle.body2(80),
                             ),
                           ),
                           const SizedBox(width: 20),
@@ -148,7 +167,7 @@ class _HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           FittedBox(
-                            child: Text(weather.city,
+                            child: Text(weather!.city,
                                 textAlign: TextAlign.right,
                                 style: AppTextStyle.body1),
                           ),
@@ -158,18 +177,31 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-              );
-            } else {
-              return const Text('Белгисиз ката болду сураныч кайра кириниз...');
-            }
-          } else {
-            return const Text('Белгисиз ката болду сураныч кайра кириниз...');
-          }
-        },
-      ),
-    );
+              ));
+    // body: FutureBuilder<Weather?>(
+    //   future: fetchData(),
+    //   builder: (context, joop) {
+    //     if (joop.connectionState == ConnectionState.waiting) {
+    //       return const Center(child: CircularProgressIndicator());
+    //     } else if (joop.connectionState == ConnectionState.none) {
+    //       return const Text('Internet bailanyshynda kata bar');
+    //     } else if (joop.connectionState == ConnectionState.done) {
+    //       if (joop.hasError) {
+    //         return Text('${joop.error}');
+    //       } else if (joop.hasData) {
+    //         final weather = joop.data!;
+
+//             } else {
+//               return const Text('Белгисиз ката болду сураныч кайра кириниз...');
+//             }
+//           } else {
+//             return const Text('Белгисиз ката болду сураныч кайра кириниз...');
   }
 }
+//       ),
+//     );
+//   }
+// }
 
 // body: Center(
       //   child: FutureBuilder(
