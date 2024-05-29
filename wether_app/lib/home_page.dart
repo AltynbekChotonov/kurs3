@@ -21,7 +21,7 @@ const List cities = <String>[
   'Batken',
   'Naryn',
   'Talas',
-  'Issyk-Kul',
+  'tokmok',
 ];
 
 class HomePage extends StatefulWidget {
