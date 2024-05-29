@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -15,6 +14,17 @@ import 'package:wether_app/constats/app_text.dart';
 import 'package:wether_app/constats/app_text_style.dart';
 import 'package:wether_app/models.dart/weather.dart';
 
+const List cities = <String>[
+  'bishkek',
+  'osh',
+  'jalal-abad',
+  'karakol',
+  'batken',
+  'naryn',
+  'talas',
+  'tokmok',
+];
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -26,6 +36,9 @@ class _HomePageState extends State<HomePage> {
   Weather? weather;
 
   Future<void> weatherLocation() async {
+    setState(() {
+      weather = null;
+    });
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -45,6 +58,7 @@ class _HomePageState extends State<HomePage> {
             temp: response.data['current']['temp'],
           );
         }
+
         setState(() {});
       }
     } else {
@@ -62,18 +76,17 @@ class _HomePageState extends State<HomePage> {
           temp: response.data['current']['temp'],
         );
       }
-      print(weather);
+
       setState(() {});
-      // await fetchData(ApiConst.latLongaddres(position.latitude, position.longitude));
     }
   }
 
-  Future<void> fetchData([String? url]) async {
+  Future<void> weatherName([String? name]) async {
     // await Future.delayed(const Duration(seconds: 3));
     final dio = Dio();
-    final response = await dio.get(url ?? ApiConst.address);
+    final response = await dio.get(ApiConst.address(name ?? 'bishkek'));
     if (response.statusCode == 200) {
-      final Weather weather = Weather(
+      weather = Weather(
         id: response.data['weather'][0]['id'],
         main: response.data['weather'][0]['main'],
         description: response.data['weather'][0]['description'],
@@ -82,7 +95,6 @@ class _HomePageState extends State<HomePage> {
         temp: response.data["main"]['temp'],
         country: response.data['sys']['country'],
       );
-      print(weather);
       setState(() {});
     }
   }
@@ -90,140 +102,129 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    fetchData();
+    weatherName();
   }
 
   @override
   Widget build(BuildContext context) {
-    log('max w = ${MediaQuery.of(context).size.width}');
-    log('max h = ${MediaQuery.of(context).size.height}');
+    log('max W ==> ${MediaQuery.of(context).size.width}');
+    log('max H ==> ${MediaQuery.of(context).size.height}');
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: AppColors.white,
-          centerTitle: true,
-          title: const Text(
-            AppText.appBarTitle,
-            style: AppTextStyle.appBar,
-          ),
-        ),
-        body: weather == null
-            ? const Center(child: CircularProgressIndicator())
-            : Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/weather.jpg'),
-                    fit: BoxFit.cover,
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: AppColors.white,
+        title: const Text(AppText.appBarTitle, style: AppTextStyle.appBar),
+      ),
+      body: weather == null
+          ? const Center(child: CircularProgressIndicator())
+          : Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/weather.jpg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CustomIconButton(
+                        icon: Icons.near_me,
+                        onPressed: () async {
+                          await weatherLocation();
+                        },
+                      ),
+                      CustomIconButton(
+                        icon: Icons.location_city,
+                        onPressed: () {
+                          showBottom();
+                        },
+                      ),
+                    ],
                   ),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Row(
+                    children: [
+                      const SizedBox(width: 20),
+                      Text('${(weather!.temp - 274.15).floorToDouble()}',
+                          style: AppTextStyle.body1),
+                      Image.network(
+                        ApiConst.getIcon(weather!.icon, 4),
+                        height: 160,
+                        fit: BoxFit.fitHeight,
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    flex: 5,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        CustomIconButton(
-                          icon: Icons.near_me,
-                          onPressed: () async {
-                            await weatherLocation();
-                          },
+                        FittedBox(
+                          child: Text(
+                            // "You'll need and".replaceAll(' ', '\n'),
+                            weather!.description.replaceAll(' ', '\n'),
+                            textAlign: TextAlign.right,
+                            style: AppTextStyle.body2((90)),
+                          ),
                         ),
-                        CustomIconButton(
-                          icon: Icons.location_city,
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
                         const SizedBox(width: 20),
-                        Text('${(weather!.temp - 273.15).floorToDouble()}',
-                            style: AppTextStyle.body1),
-                        Image.network(
-                          ApiConst.getIcon(weather!.icon, 4),
-                          height: 160,
-                          fit: BoxFit.fitHeight,
-                        ),
                       ],
                     ),
-                    Expanded(
-                      flex: 5,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              "${weather!.description}".replaceAll(' ', '\n'),
-                              textAlign: TextAlign.right,
-                              style: AppTextStyle.body2(80),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                        ],
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: FittedBox(
+                      child: Text(
+                        weather!.city,
+                        textAlign: TextAlign.right,
+                        style: AppTextStyle.body1,
                       ),
                     ),
-                    Expanded(
-                      flex: 1,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          FittedBox(
-                            child: Text(weather!.city,
-                                textAlign: TextAlign.right,
-                                style: AppTextStyle.body1),
-                          ),
-                          const SizedBox(width: 10)
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ));
-    // body: FutureBuilder<Weather?>(
-    //   future: fetchData(),
-    //   builder: (context, joop) {
-    //     if (joop.connectionState == ConnectionState.waiting) {
-    //       return const Center(child: CircularProgressIndicator());
-    //     } else if (joop.connectionState == ConnectionState.none) {
-    //       return const Text('Internet bailanyshynda kata bar');
-    //     } else if (joop.connectionState == ConnectionState.done) {
-    //       if (joop.hasError) {
-    //         return Text('${joop.error}');
-    //       } else if (joop.hasData) {
-    //         final weather = joop.data!;
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
 
-//             } else {
-//               return const Text('Белгисиз ката болду сураныч кайра кириниз...');
-//             }
-//           } else {
-//             return const Text('Белгисиз ката болду сураныч кайра кириниз...');
+  void showBottom() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.7,
+          padding: const EdgeInsets.fromLTRB(15, 20, 15, 7),
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 19, 15, 2),
+            border: Border.all(color: AppColors.white),
+            borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(20),
+              topLeft: Radius.circular(20),
+            ),
+          ),
+          child: ListView.builder(
+            itemCount: cities.length,
+            itemBuilder: (BuildContext context, int index) {
+              final city = cities[index];
+              return Card(
+                child: ListTile(
+                  onTap: () async {
+                    setState(() {
+                      weather = null;
+                    });
+                    weatherName(city);
+                    Navigator.pop(context);
+                  },
+                  title: Text(city),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 }
-//       ),
-//     );
-//   }
-// }
-
-// body: Center(
-      //   child: FutureBuilder(
-      //     future: fetchData(),
-      //     builder: (ctx, sn) {
-      //       if (sn.hasData) {
-      //         return Column(
-      //           children: [
-      //             Text(sn.data!.id.toString()),
-      //             Text(sn.data!.description),
-      //             Text(sn.data!.main),
-      //             Text(sn.data!.icon),
-      //             Text(sn.data!.city),
-      //             Text(sn.data!.country),
-      //             Text(sn.data!.temp.toString()),
-      //           ],
-      //         );
-      //       } else if (sn.hasError) {
-      //         return Text(sn.error.toString());
-      //       } else {
-      //         return CircularProgressIndicator();
-      //       }
-      //     },
-      //   ),
-      // ),
