@@ -15,14 +15,13 @@ import 'package:wether_app/constats/app_text_style.dart';
 import 'package:wether_app/models.dart/weather.dart';
 
 const List cities = <String>[
-  'bishkek',
-  'osh',
-  'jalal-abad',
-  'karakol',
-  'batken',
-  'naryn',
-  'talas',
-  'tokmok',
+  'Bishkek',
+  'Osh',
+  'Jalal-abad',
+  'Batken',
+  'Naryn',
+  'Talas',
+  'Issyk-Kul',
 ];
 
 class HomePage extends StatefulWidget {
