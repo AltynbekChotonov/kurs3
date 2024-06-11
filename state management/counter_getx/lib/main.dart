@@ -12,5 +12,8 @@ state management
 2- widget дарагына каалаган жерине датаны жеткирип берет
 3- логика кодторду  ui кодтордон  болуп алат.
 
-
+........................................................
+Getx [MVC]---> model-view-controller
+Mobx [MVVM]---> model-view-view-model (mobile)
+Bloc [Bloc pattern]---> кийин отобуз
 */
