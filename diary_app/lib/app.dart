@@ -1,4 +1,3 @@
-import 'package:diary_app/home/add_diary_page.dart';
 import 'package:diary_app/home/home_page.dart';
 import 'package:flutter/material.dart';
 

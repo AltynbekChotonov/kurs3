@@ -88,12 +88,21 @@ class _AddDiatyPageState extends State<AddDiatyPage> {
                           context: context,
                           builder: (context) {
                             return const CupertinoAlertDialog(
+                              title: Text('Please waiting'),
                               content: Center(
-                                child: CupertinoActivityIndicator(),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 40),
+                                  child: CupertinoActivityIndicator(
+                                    radius: 20,
+                                    color: Colors.blue,
+                                  ),
+                                ),
                               ),
                             );
                           });
                       await addDiary();
+                      // ignore: use_build_context_synchronously
+                      Navigator.popUntil(context, (route) => route.isFirst);
                     }
                   },
                   icon: const Icon(Icons.publish),

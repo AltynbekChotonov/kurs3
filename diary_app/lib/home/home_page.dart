@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:diary_app/home/add_diary_page.dart';
+import 'package:diary_app/home/diary_model.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -18,13 +20,9 @@ class _MyHomePageState extends State<MyHomePage> {
     readDiarys();
   }
 
-  Future<void> readDiarys() async {
+  Stream<QuerySnapshot> readDiarys() {
     final db = FirebaseFirestore.instance;
-    await db.collection("diarys").get().then((event) {
-      for (var doc in event.docs) {
-        print("${doc.id} => ${doc.data()}");
-      }
-    });
+    return db.collection('diarys').snapshots();
   }
 
   @override
@@ -32,22 +30,45 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(''),
+        title: const Text(''),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '0',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
+      body: StreamBuilder(
+          stream: readDiarys(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CupertinoActivityIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text(snapshot.error!.toString()));
+            } else if (snapshot.hasData) {
+              final List<Diary> diarys = snapshot.data!.docs
+                  .map((e) => Diary.fromMap(e.data() as Map<String, dynamic>))
+                  .toList();
+              return ListView.builder(
+                itemCount: diarys.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final diary = diarys[index];
+                  return Card(
+                    child: ListTile(
+                      title: Text(diary.title),
+                      trailing: Checkbox(
+                        value: diary.isCompleted,
+                        onChanged: (v) {},
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(diary.description ?? ''),
+                          Text(diary.author),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            } else {
+              return const Center(child: Text('Some error'));
+            }
+          }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
